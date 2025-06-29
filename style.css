@@ -268,7 +268,13 @@ body {
 
 /* Reproductor de música */
 #musicPlayerContainer {
-    transition: transform 0.75s cubic-bezier(0.075, 0.82, 0.165, 1), opacity 0.75s ease;
+    display: flex; /* Añadir flexbox al contenedor principal del reproductor */
+    align-items: center; /* Alinear verticalmente los elementos dentro del contenedor */
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    z-index: 100;
+    transition: all 0.75s cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 
 #musicPlayerContainer.hidden {
@@ -277,38 +283,11 @@ body {
     pointer-events: none;
 }
 
-.music-container {
-    background: linear-gradient(90deg, var(--bg-envelope-color) 60%, var(--accent2) 100%); /* Tu degradado para el reproductor */
-    border: 2px solid var(--envelope-tab); /* Tu borde del reproductor */
-    border-radius: 18px; /* Tu border-radius del reproductor */
-    box-shadow: 0 4px 24px var(--shadow-color); /* Tu sombra del reproductor */
-    transition: all 0.75s cubic-bezier(0.075, 0.82, 0.165, 1);
-    display: flex; /* Añadir flex para que los elementos se alineen */
-    align-items: center; /* Centrar verticalmente */
-    padding: 1rem 1.5rem; /* Padding interno */
-}
-
-.music-container.minimized {
-    width: 80px; /* Ancho cuando está minimizado, solo el botón toggle */
-    padding: 0.5rem;
-    justify-content: center;
-    border-radius: 9999px; /* Redondear al minimizar */
-    height: 80px; /* Asegurar que sea circular */
-}
-
-.music-container.minimized .avatar,
-.music-container.minimized .player {
-    opacity: 0;
-    width: 0;
-    overflow: hidden;
-    pointer-events: none;
-    transition: opacity 0.3s ease, width 0.3s ease, height 0.3s ease;
-}
-
 .toggle-player {
-    position: absolute; /* Para que esté en la esquina */
-    right: -1rem; /* Posición que tenías */
-    top: -1rem; /* Posición que tenías */
+    /* Posición relativa al #musicPlayerContainer para estar al lado */
+    position: relative; /* Cambiado a relative para el flujo normal */
+    right: 0; /* Reiniciar right */
+    top: 0; /* Reiniciar top */
     width: 2.5rem; /* Ajustar tamaño del botón de cierre/apertura */
     height: 2.5rem;
     border-radius: 100%;
@@ -319,14 +298,47 @@ body {
     background: var(--bg-envelope-color); /* Fondo del botón toggle */
     border: 1.5px solid var(--envelope-tab); /* Borde del botón toggle */
     box-shadow: 0 2px 8px var(--shadow-color); /* Sombra del botón toggle */
+    /* Margen para separarlo del .music-container */
+    margin-right: 1rem;
 }
 
-.music-container.minimized .toggle-player {
-    position: static; /* Vuelve a posición normal cuando está minimizado */
+.music-container {
+    background: linear-gradient(90deg, var(--bg-envelope-color) 60%, var(--accent2) 100%); /* Tu degradado para el reproductor */
+    border: 2px solid var(--envelope-tab); /* Tu borde del reproductor */
+    border-radius: 18px; /* Tu border-radius del reproductor */
+    box-shadow: 0 4px 24px var(--shadow-color); /* Tu sombra del reproductor */
+    transition: all 0.75s cubic-bezier(0.075, 0.82, 0.165, 1);
+    display: flex; /* Asegura flex para el contenido interno */
+    align-items: center; /* Centrar verticalmente */
+    padding: 1rem 1.5rem; /* Padding interno */
+    width: 450px; /* Ancho completo del reproductor */
+    height: 70px; /* Tu altura del reproductor */
+}
+
+.music-container.minimized {
+    width: 0; /* Ocultar el contenido al minimizar */
+    padding: 0;
+    height: 0;
+    overflow: hidden;
+    pointer-events: none; /* Asegura que no se pueda interactuar */
+    opacity: 0;
+    margin-left: 0; /* Eliminar margen para que el botón toggle se posicione correctamente */
+}
+
+/* Cuando el contenedor principal está minimizado, solo se ve el botón toggle */
+#musicPlayerContainer.minimized .toggle-player {
+    position: static; /* Volver a posición normal */
     transform: none;
+    margin-right: 0; /* Eliminar margen si solo está el botón */
     width: 3rem; /* Tamaño del botón cuando está solo */
     height: 3rem;
 }
+
+#musicPlayerContainer.minimized .music-container {
+    /* Asegura que el contenido del reproductor se oculte completamente */
+    display: none;
+}
+
 
 .avatar {
     width: 4rem; /* Ancho del avatar */
@@ -427,8 +439,9 @@ body {
     transition-duration: 0.1s;
 }
 
-.music-container.minimized .track-info,
-.music-container.minimized .track-nav {
+/* La clase minimized ahora se aplica al contenedor #musicPlayerContainer */
+#musicPlayerContainer.minimized .track-info,
+#musicPlayerContainer.minimized .track-nav {
     transition: all 0s ease;
     opacity: 0;
     pointer-events: none;
