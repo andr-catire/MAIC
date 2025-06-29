@@ -35,15 +35,15 @@ if (envelopeWrapper) { // Asegúrate de que el elemento existe antes de añadir 
 
         // Cuando se abre la carta (se añade 'flap'), mostrar el reproductor de música
         const musicPlayerContainer = document.getElementById('musicPlayerContainer');
-        const musicContainer = document.querySelector('.music-container');
-
+        
         if (envelopeWrapper.classList.contains('flap')) {
-            musicPlayerContainer.classList.remove('hidden');
-            musicContainer.classList.remove('minimized'); // Asegura que esté "abierto"
+            musicPlayerContainer.classList.remove('hidden'); // Mostrar el contenedor del reproductor
+            musicPlayerContainer.classList.remove('minimized'); // Asegurar que no esté minimizado si se abre
+            document.getElementById('togglePlayerIcon').src = 'icons/close.svg'; // Mostrar icono de cerrar
         } else {
             // Cuando se cierra la carta, lo minimizamos
-            musicContainer.classList.add('minimized');
-            // musicPlayerContainer.classList.add('hidden'); // Podrías ocultarlo completamente si lo prefieres
+            musicPlayerContainer.classList.add('minimized'); // Oculta el contenido y solo muestra el botón de toggle
+            document.getElementById('togglePlayerIcon').src = 'icons/open.svg'; // Mostrar icono de abrir
             pauseTrack(); // Pausa la música si se cierra la carta
         }
     });
@@ -54,7 +54,7 @@ if (envelopeWrapper) { // Asegúrate de que el elemento existe antes de añadir 
 // Lógica del Reproductor de Música
 // ======================================
 
-const musicContainer = document.querySelector('.music-container');
+const musicPlayerContainer = document.getElementById('musicPlayerContainer'); // El nuevo contenedor principal
 const playPauseBtn = document.querySelector('.playpause-track');
 const playPauseIcon = document.getElementById('playPauseIcon');
 const prevBtn = document.querySelector('.prev-track');
@@ -62,7 +62,7 @@ const nextBtn = document.querySelector('.next-track');
 const trackName = document.querySelector('.trackname');
 const trackArtist = document.querySelector('.trackartist');
 const togglePlayerBtn = document.querySelector('.toggle-player');
-const togglePlayerIcon = togglePlayerBtn ? togglePlayerBtn.querySelector('img') : null; // Añadir chequeo de nulidad
+const togglePlayerIcon = document.getElementById('togglePlayerIcon');
 const soundBarsLottie = document.querySelector('.sound-bars');
 
 // Lista de canciones
@@ -70,17 +70,17 @@ const trackList = [
     {
         name: "2 Much",
         artist: "Justin Bieber",
-        path: "music/2 Much.mp3"
+        path: "MAI/music/2 Much.mp3" // RUTA CORREGIDA AQUÍ
     },
     {
         name: "Anyone",
         artist: "Justin Bieber",
-        path: "music/Anyone.mp3"
+        path: "MAI/music/Anyone.mp3" // RUTA CORREGIDA AQUÍ
     },
     {
         name: "Can't Feel My Face",
         artist: "The Weeknd",
-        path: "music/Can't Feel My Face.mp3"
+        path: "MAI/music/Can't Feel My Face.mp3" // RUTA CORREGIDA AQUÍ
     }
 ];
 
@@ -108,11 +108,11 @@ function loadLottieAnimation() {
 
     currentTrack.onplay = () => {
         if (animation) animation.play();
-        musicContainer.classList.remove('paused');
+        musicPlayerContainer.classList.remove('paused'); // Aplica la clase 'paused' al contenedor principal
     };
     currentTrack.onpause = () => {
         if (animation) animation.pause();
-        musicContainer.classList.add('paused');
+        musicPlayerContainer.classList.add('paused'); // Aplica la clase 'paused' al contenedor principal
     };
     currentTrack.onended = () => {
         if (animation) {
@@ -157,18 +157,19 @@ function playTrack() {
         .then(() => {
             isPlaying = true;
             updatePlayPauseButton();
-            if (musicContainer) musicContainer.classList.remove('paused');
+            if (musicPlayerContainer) musicPlayerContainer.classList.remove('paused'); // Aplica al contenedor principal
             if (animation) animation.play();
         })
         .catch(error => {
             console.error("Error al intentar reproducir el audio (posiblemente Autoplay Policy):", error);
             isPlaying = false;
             updatePlayPauseButton();
-            if (musicContainer) musicContainer.classList.add('paused');
+            if (musicPlayerContainer) musicPlayerContainer.classList.add('paused'); // Aplica al contenedor principal
             if (animation) animation.pause();
             // Solo alerta la primera vez que falla por autoplay
-            if (error.name === 'NotAllowedError') {
+            if (error.name === 'NotAllowedError' && !localStorage.getItem('autoplay_alerted')) {
                 alert("El navegador bloqueó la reproducción automática. Por favor, haz clic en el botón de Play para iniciar la música.");
+                localStorage.setItem('autoplay_alerted', 'true');
             }
         });
 }
@@ -177,7 +178,7 @@ function pauseTrack() {
     currentTrack.pause();
     isPlaying = false;
     updatePlayPauseButton();
-    if (musicContainer) musicContainer.classList.add('paused');
+    if (musicPlayerContainer) musicPlayerContainer.classList.add('paused'); // Aplica al contenedor principal
     if (animation) animation.pause();
 }
 
@@ -211,18 +212,15 @@ function updatePlayPauseButton() {
 
 // Función para alternar la visibilidad y el estado minimizado del reproductor
 function toggleMusicPlayer() {
-    const playerDiv = document.querySelector('.music-container');
-    const playerContainer = document.getElementById('musicPlayerContainer');
+    // La clase 'minimized' ahora se aplica directamente al #musicPlayerContainer
+    if (!musicPlayerContainer || !togglePlayerIcon) return;
 
-    if (!playerDiv || !playerContainer || !togglePlayerIcon) return; // Salir si no se encuentran los elementos
-
-    if (playerDiv.classList.contains('minimized')) {
-        playerDiv.classList.remove('minimized');
-        playerContainer.classList.remove('hidden'); // Asegura que el contenedor esté visible
-        togglePlayerIcon.src = 'icons/close.svg';
+    if (musicPlayerContainer.classList.contains('minimized')) {
+        musicPlayerContainer.classList.remove('minimized');
+        togglePlayerIcon.src = 'icons/close.svg'; // Icono de cerrar/minimizar
     } else {
-        playerDiv.classList.add('minimized');
-        togglePlayerIcon.src = 'icons/open.svg'; // Asegúrate de tener un icono 'open.svg'
+        musicPlayerContainer.classList.add('minimized');
+        togglePlayerIcon.src = 'icons/open.svg'; // Icono de abrir/maximizar
         pauseTrack(); // Pausa la música al minimizar
     }
 }
