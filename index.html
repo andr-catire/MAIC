@@ -15,10 +15,10 @@
 <body class="font-['Comic_Neue'] relative">
 
     <div id="musicPlayerContainer" class="fixed left-6 bottom-6 z-20 hidden">
+        <button class="toggle-player rounded-full p-1 mr-3" onclick="toggleMusicPlayer()" aria-label="Toggle player">
+            <img id="togglePlayerIcon" src="icons/close.svg" alt="Close" class="w-6 h-6">
+        </button>
         <div class="music-container relative flex items-center px-4 py-3 shadow-lg">
-            <button class="toggle-player rounded-full p-1 mr-3" onclick="toggleMusicPlayer()" aria-label="Toggle player">
-                <img src="icons/close.svg" alt="Close" class="w-6 h-6">
-            </button>
             <div class="avatar w-14 mr-4">
                 <img src="icons/pinkheart.svg" alt="Avatar" class="w-full rounded-md">
             </div>
